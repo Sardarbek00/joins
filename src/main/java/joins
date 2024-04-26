@@ -1,0 +1,81 @@
+CREATE TABLE passports
+(
+    id            SERIAL PRIMARY KEY,
+    name          VARCHAR NOT NULL,
+    unique_number INTEGER
+);
+CREATE TABLE users
+(
+    id          SERIAL PRIMARY KEY,
+    name        VARCHAR NOT NULL,
+    last_name   VARCHAR NOT NULL,
+    age         INTEGER,
+    -- passport_id INTEGER REFERENCES passports(id)
+    passport_id INTEGER,
+    FOREIGN KEY (passport_id) REFERENCES passports (id)
+);
+INSERT INTO passports(name, unique_number)
+VALUES ('inner_passport', 2333324),
+       ('foreign_passport', 4544250),
+       ('test', 8600923);
+
+INSERT INTO users(name, last_name, age, passport_id)
+VALUES ('user', 'user_last_name', 42, 1),
+       ('admin', 'admin_last_name', 38, 2),
+       ('test_user', 'test_last_name', 11, null);
+
+TRUNCATE passports,users;
+DROP TABLE passports,users;
+
+--НЕЯВНОЕ СОЕДИНЕНИЕ
+SELECT p.id,
+       p.name,
+       p.unique_number,
+       u.id,
+       u.name
+FROM passports p,
+     users u;
+
+--INNER JOIN (простое соединение)
+SELECT p.id,
+       p.name,
+       u.id,
+       u.name
+FROM passports p
+         INNER JOIN users u ON p.id = u.passport_id;
+
+--OUTER LEFT JOIN
+SELECT *
+FROM passports p
+         LEFT JOIN users u ON p.id = u.passport_id;
+
+SELECT u.id,
+       u.name,
+       p.id,
+       p.name
+FROM users u
+         LEFT JOIN passports p ON u.passport_id = p.id;
+
+--OUTER RIGHT JOIN
+SELECT p.id,
+       p.name,
+       u.id,
+       u.name
+FROM passports p
+         RIGHT JOIN users u ON p.id = u.passport_id;
+
+--FULL JOIN
+SELECT p.id,
+       p.name,
+       u.id,
+       u.name
+FROM passports p
+RIGHT JOIN users u ON p.id=u.passport_id;
+
+--CROSS JOIN
+SELECT p.id,
+       p.name,
+       u.id,
+       u.name
+FROM passports p
+CROSS JOIN users u;
